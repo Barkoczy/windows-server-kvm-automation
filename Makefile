@@ -64,7 +64,7 @@ DISK_PATH := $(DISK_DIR)/$(VM_NAME).qcow2
 WS_ISO     ?= $(ISO_DIR)/WinServer$(WS_VERSION).iso
 VIRTIO_ISO ?= $(ISO_DIR)/virtio-win.iso
 
-.PHONY: help deps check net-default disk download-virtio download-ws-iso install start stop reboot console status destroy undefine remove reinstall clean purge rdp
+.PHONY: help deps check net-default disk download-virtio download-ws-iso install start stop reboot console status destroy vm-undefine remove reinstall clean purge rdp
 
 help:
 	@echo "╔══════════════════════════════════════════════════════════════╗"
@@ -358,15 +358,15 @@ destroy:
 	@sudo virsh destroy "$(VM_NAME)" 2>/dev/null || true
 
 
-undefine: destroy
+vm-undefine: destroy
 	@echo "🗑️  Removing VM definition: $(VM_NAME)"
 	@sudo virsh undefine "$(VM_NAME)" --nvram 2>/dev/null || sudo virsh undefine "$(VM_NAME)" 2>/dev/null || true
 	@echo "✅ VM definition removed (disk remains at $(DISK_PATH))"
 
-remove: undefine
+remove: vm-undefine
 	@echo "✅ VM $(VM_NAME) removed (disk preserved)"
 
-reinstall: destroy undefine clean
+reinstall: destroy vm-undefine clean
 	@echo "🔄 Reinstalling VM from scratch..."
 	@$(MAKE) install
 
