@@ -1,0 +1,2 @@
+# This file ensures the iso/ directory is tracked by git
+# All ISO files are ignored except this .gitkeep file

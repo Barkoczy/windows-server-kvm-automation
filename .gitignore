@@ -1,0 +1,17 @@
+# Local configuration overrides
+config.local.yml
+
+# ISO directory - ignore all files except .gitkeep
+iso/*
+!iso/.gitkeep
+
+# VM disk images
+*.qcow2
+*.img
+
+# Backup files
+*.bak
+*~
+
+# Logs
+*.log

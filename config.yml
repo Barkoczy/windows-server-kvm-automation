@@ -1,0 +1,23 @@
+# Windows Server VM Configuration
+# Edit this file to customize your VM settings
+
+vm:
+  name: winlab
+  version: 2019  # 2019 or 2022
+
+hardware:
+  vcpu: 12       # Number of virtual CPU cores
+  ram_mb: 12288  # RAM in MB (12288 = 12 GB)
+  disk_gb: 60    # Disk size in GB
+
+paths:
+  iso_dir: ./iso              # Local ISO directory (inside project)
+  disk_dir: /var/lib/libvirt/images
+
+# Advanced settings (optional)
+advanced:
+  cpu_mode: host-passthrough  # host-passthrough, host-model, or custom
+  machine_type: q35           # q35 or pc-i440fx
+  firmware: uefi              # uefi or bios
+  disk_cache: writeback       # writeback, writethrough, none
+  disk_io: threads            # threads or native
