@@ -64,7 +64,7 @@ DISK_PATH := $(DISK_DIR)/$(VM_NAME).qcow2
 WS_ISO     ?= $(ISO_DIR)/WinServer$(WS_VERSION).iso
 VIRTIO_ISO ?= $(ISO_DIR)/virtio-win.iso
 
-.PHONY: help deps check net-default disk download-virtio download-ws-iso install start stop reboot console status destroy vm-undefine remove reinstall clean purge rdp
+.PHONY: help deps check net-default disk download-virtio download-ws-iso install start stop reboot console status destroy vm-undefine remove reinstall clean purge rdp rdp-connect
 
 help:
 	@echo "╔══════════════════════════════════════════════════════════════╗"
@@ -89,6 +89,7 @@ help:
 	@echo "  make destroy             - Násilně zastavit VM (force stop)"
 	@echo "  make console             - Připojit grafickou konzoli (virt-viewer)"
 	@echo "  make rdp                 - Zobrazit RDP připojení info"
+	@echo "  make rdp-connect         - Připojit se přímo přes RDP (xfreerdp)"
 	@echo "  make status              - Zobrazit stav VM"
 	@echo ""
 	@echo "MAZÁNÍ:"
@@ -345,6 +346,7 @@ rdp:
 		echo "✅ VM IP Address: $$IP"; \
 		echo ""; \
 		echo "Connect with:"; \
+		echo "  make rdp-connect  # Auto-connect"; \
 		echo "  rdesktop $$IP"; \
 		echo "  xfreerdp /v:$$IP /u:Administrator /p:Admin123!Password /cert:ignore"; \
 		echo ""; \
@@ -352,6 +354,16 @@ rdp:
 		echo "  Username: Administrator"; \
 		echo "  Password: Admin123!Password"; \
 	fi
+
+rdp-connect:
+	@echo "🚀 Connecting to VM via RDP..."
+	@IP=$$(sudo virsh domifaddr "$(VM_NAME)" 2>/dev/null | grep -oP '192\.168\.122\.\d+' | head -1); \
+	if [ -z "$$IP" ]; then \
+		echo "❌ No IP address assigned yet"; \
+		exit 1; \
+	fi; \
+	xfreerdp /v:$$IP /u:Administrator /p:Admin123!Password /cert:ignore /dynamic-resolution +clipboard /audio-mode:1 || \
+	{ echo ""; echo "⚠️  xfreerdp failed. Try: rdesktop $$IP"; }
 
 destroy:
 	@echo "🛑 Destroying VM: $(VM_NAME)"
