@@ -147,7 +147,7 @@ This is a fully automated Windows Server VM deployment system for Ubuntu 24.04 u
 - Calls `make install` after cleanup
 
 **`make purge`**
-- Depends on: destroy, undefine (NOTE: should be vm-undefine)
+- Depends on: destroy, vm-undefine, clean
 - Complete cleanup including disk and unattended ISO
 - Equivalent to destroy + vm-undefine + clean
 

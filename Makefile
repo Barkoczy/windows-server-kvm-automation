@@ -416,7 +416,7 @@ clean:
 		echo "✅ Unattended ISO deleted"; \
 	fi
 
-purge: destroy undefine clean
+purge: destroy vm-undefine clean
 	@echo "💥 Complete cleanup of VM $(VM_NAME)"
 	@echo "✅ VM completely removed (VM definition + disk + unattended ISO)"
 

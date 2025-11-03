@@ -3,7 +3,7 @@
 
 vm:
   name: winlab
-  version: 2016 # 2016, 2019, 2022, 2025
+  version: 2019 # 2016, 2019, 2022, 2025
 
 hardware:
   vcpu: 12 # Number of virtual CPU cores
