@@ -56,8 +56,28 @@ else
   DISK_CACHE ?= writeback
 endif
 
-# Derived values
-OS_VARIANT := $(if $(filter $(WS_VERSION),2019),win2k19,win2k22)
+# Derived values - OS variant mapping with osinfo-db fallback
+ifeq ($(WS_VERSION),2016)
+  OS_VARIANT := $(shell osinfo-query os 2>/dev/null | grep -q win2k16 && echo win2k16 || echo win2k12r2)
+else ifeq ($(WS_VERSION),2019)
+  OS_VARIANT := win2k19
+else ifeq ($(WS_VERSION),2022)
+  OS_VARIANT := win2k22
+else ifeq ($(WS_VERSION),2025)
+  OS_VARIANT := $(shell osinfo-query os 2>/dev/null | grep -q win2k25 && echo win2k25 || echo win2k22)
+else
+  OS_VARIANT := win2k22
+endif
+
+# Disk bus type depends on machine type
+# Q35 chipset does NOT support IDE (only SATA/SCSI/VirtIO)
+# PC (i440fx) chipset supports IDE
+ifeq ($(MACHINE_TYPE),q35)
+  DISK_BUS := sata
+else
+  DISK_BUS := ide
+endif
+
 DISK_PATH := $(DISK_DIR)/$(VM_NAME).qcow2
 
 # ISO names (adjust if needed)
@@ -256,11 +276,11 @@ install: deps net-default
 	@echo "  - Chipset: Q35 + UEFI"
 	@echo ""
 	@# Create unattended ISO with embedded autounattend.xml
-	@if [ ! -f "$(ISO_DIR)/WinServer2019_Unattended.iso" ]; then \
+	@if [ ! -f "$(ISO_DIR)/WinServer$(WS_VERSION)_Unattended.iso" ]; then \
 		echo "📝 Creating unattended ISO with embedded autounattend.xml..."; \
-		bash scripts/repack-unattended-iso.sh; \
+		bash scripts/repack-unattended-iso.sh $(WS_VERSION); \
 	fi
-	@WS_ISO_ABS=$$(cd "$(dir $(ISO_DIR)/WinServer2019_Unattended.iso)" && pwd)/WinServer2019_Unattended.iso; \
+	@WS_ISO_ABS=$$(cd "$(dir $(ISO_DIR)/WinServer$(WS_VERSION)_Unattended.iso)" && pwd)/WinServer$(WS_VERSION)_Unattended.iso; \
 	VIRTIO_ISO_ABS=$$(cd "$(dir $(VIRTIO_ISO))" && pwd)/$(notdir $(VIRTIO_ISO)); \
 	sudo virt-install \
 	  --name "$(VM_NAME)" \
@@ -273,7 +293,7 @@ install: deps net-default
 	  --os-variant $(OS_VARIANT) \
 	  --graphics spice,listen=127.0.0.1 \
 	  --video qxl \
-	  --disk path="$(DISK_PATH)",format=qcow2,bus=ide \
+	  --disk path="$(DISK_PATH)",format=qcow2,bus=$(DISK_BUS) \
 	  --cdrom "$$WS_ISO_ABS" \
 	  --disk path="$$VIRTIO_ISO_ABS",device=cdrom \
 	  --network network=default,model=e1000 \
@@ -391,8 +411,8 @@ clean:
 		echo "ℹ️  Disk not found: $(DISK_PATH)"; \
 	fi
 	@echo "🗑️  Removing unattended ISO..."
-	@if [ -f "$(ISO_DIR)/WinServer2019_Unattended.iso" ]; then \
-		rm -f "$(ISO_DIR)/WinServer2019_Unattended.iso"; \
+	@if [ -f "$(ISO_DIR)/WinServer$(WS_VERSION)_Unattended.iso" ]; then \
+		rm -f "$(ISO_DIR)/WinServer$(WS_VERSION)_Unattended.iso"; \
 		echo "✅ Unattended ISO deleted"; \
 	fi
 

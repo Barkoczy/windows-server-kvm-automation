@@ -12,6 +12,7 @@ make download-ws-iso
 ```
 
 ### Podporované Verze
+- **2016** - Windows Server 2016 (≈6.5 GB) ⚠️ **Extended Support končí 12.1.2027**
 - **2019** - Windows Server 2019 (5.3 GB)
 - **2022** - Windows Server 2022 (5.2 GB)
 - **2025** - Windows Server 2025 (5.4 GB)
@@ -19,6 +20,18 @@ make download-ws-iso
 Všechny verze jsou **180-day evaluation** z Microsoft Evaluation Center.
 
 ## Přímé Download Linky
+
+### Windows Server 2016 (⚠️ EOL Warning)
+```bash
+curl -L -o WinServer2016.iso \
+  'https://software-download.microsoft.com/download/pr/Windows_Server_2016_Datacenter_EVAL_en-us_14393_refresh.ISO'
+```
+
+> **⚠️ Životní cyklus Windows Server 2016**:
+> - **Mainstream support skončil**: 11. ledna 2022
+> - **Extended support končí**: 12. ledna 2027
+> - **Doporučení**: Pro nové projekty zvažte novější verzi (2019/2022/2025)
+> - **Poznámka**: Evaluation ISO je stále dostupné, ale podpora končí za ~1.5 roku
 
 ### Windows Server 2019
 ```bash
@@ -46,6 +59,7 @@ make download-ws-iso-manual
 ```
 
 Nebo navštivte přímo:
+- **2016**: https://www.microsoft.com/evalcenter/evaluate-windows-server-2016
 - **2019**: https://www.microsoft.com/evalcenter/download-windows-server-2019
 - **2022**: https://www.microsoft.com/evalcenter/evaluate-windows-server-2022
 - **2025**: https://www.microsoft.com/evalcenter/evaluate-windows-server-2025
@@ -58,6 +72,7 @@ ls -lh iso/WinServer*.iso
 ```
 
 Očekávané velikosti:
+- 2016: ~6.5 GB
 - 2019: ~5.3 GB
 - 2022: ~5.2 GB
 - 2025: ~5.4 GB

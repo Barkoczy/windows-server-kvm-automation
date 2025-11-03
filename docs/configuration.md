@@ -7,7 +7,7 @@
 # Windows Server VM Configuration
 vm:
   name: winlab              # VM name (used in virsh commands)
-  version: 2019             # Windows Server version: 2019, 2022, or 2025
+  version: 2019             # Windows Server version: 2016, 2019, 2022, 2025
 
 hardware:
   vcpu: 12                  # Number of virtual CPU cores
@@ -44,10 +44,12 @@ advanced:
   ```
 
 #### `vm.version`
-- **Type**: String (2019, 2022, 2025)
+- **Type**: String (2016, 2019, 2022, 2025)
 - **Default**: `2019`
 - **Description**: Windows Server version to install
-- **Notes**: Affects ISO filename and OS variant detection
+- **Notes**:
+  - Affects ISO filename and OS variant detection
+  - ⚠️ Windows Server 2016: Extended support ends 12.1.2027
 
 ### Hardware Settings
 

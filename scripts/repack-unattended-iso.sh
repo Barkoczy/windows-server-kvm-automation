@@ -1,13 +1,23 @@
 #!/bin/bash
 # Repack Windows Server ISO with autounattend.xml for fully automated installation
-# Usage: ./scripts/repack-unattended-iso.sh
+# Usage: ./scripts/repack-unattended-iso.sh [VERSION]
 
 set -e
 
 PROJECT_ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 ISO_DIR="$PROJECT_ROOT/iso"
-ORIGINAL_ISO="$ISO_DIR/WinServer2019.iso"
-OUTPUT_ISO="$ISO_DIR/WinServer2019_Unattended.iso"
+
+# Load version from argument or config.yml
+if [ $# -ge 1 ]; then
+    WS_VERSION="$1"
+elif [ -f "$PROJECT_ROOT/config.yml" ] && command -v yq >/dev/null 2>&1; then
+    WS_VERSION=$(yq eval '.vm.version' "$PROJECT_ROOT/config.yml" 2>/dev/null || echo "2019")
+else
+    WS_VERSION="2019"
+fi
+
+ORIGINAL_ISO="$ISO_DIR/WinServer${WS_VERSION}.iso"
+OUTPUT_ISO="$ISO_DIR/WinServer${WS_VERSION}_Unattended.iso"
 AUTOUNATTEND_XML="$PROJECT_ROOT/Autounattend.xml"
 
 # Temporary directories for mounting and building
@@ -65,7 +75,17 @@ rm -f "$BUILD_DIR"/[Aa]utounattend.xml "$BUILD_DIR"/sources/[Aa]utounattend.xml 
 # CRITICAL: Filename MUST be exactly "Autounattend.xml" (capital A) for Windows Setup to detect it
 echo "📝 Adding Autounattend.xml to ISO root and sources/ directory..."
 install -m 644 "$AUTOUNATTEND_XML" "$BUILD_DIR/Autounattend.xml"
-install -m 644 "$AUTOUNATTEND_XML" "$BUILD_DIR/sources/Autounattend.xml"
+
+# CRITICAL: Windows Server 2016 uses different image index
+# 2016: Index 4 = Datacenter (Desktop Experience)
+# 2019/2022/2025: Index 2 = Datacenter (Desktop Experience)
+if [ "$WS_VERSION" = "2016" ]; then
+    echo "🔧 Adjusting image index for Windows Server 2016 (Datacenter = index 4)..."
+    sed -i 's|<Value>2</Value>|<Value>4</Value>|' "$BUILD_DIR/Autounattend.xml"
+fi
+
+# Copy to sources/ directory as well (UEFI requirement)
+install -m 644 "$BUILD_DIR/Autounattend.xml" "$BUILD_DIR/sources/Autounattend.xml"
 
 # Verify files were created correctly
 echo "🔍 Verifying Autounattend.xml placement..."

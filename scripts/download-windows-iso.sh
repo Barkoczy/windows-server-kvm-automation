@@ -33,8 +33,9 @@ if [ $# -ge 1 ]; then
     WS_VERSION="$1"
 fi
 
-# ISO download URLs (Microsoft Evaluation Center - verified October 2025)
+# ISO download URLs (Microsoft Evaluation Center - verified November 2025)
 declare -A ISO_URLS=(
+    ["2016"]="https://software-download.microsoft.com/download/pr/Windows_Server_2016_Datacenter_EVAL_en-us_14393_refresh.ISO"
     ["2019"]="https://software-download.microsoft.com/download/pr/17763.737.190906-2324.rs5_release_svc_refresh_SERVER_EVAL_x64FRE_en-us_1.iso"
     ["2022"]="https://software-static.download.prss.microsoft.com/sg/download/888969d5-f34g-4e03-ac9d-1f9786c66749/SERVER_EVAL_x64FRE_en-us.iso"
     ["2025"]="https://software-static.download.prss.microsoft.com/dbazure/888969d5-f34g-4e03-ac9d-1f9786c66749/26100.1742.240906-0331.ge_release_svc_refresh_SERVER_EVAL_x64FRE_en-us.iso"
@@ -42,6 +43,7 @@ declare -A ISO_URLS=(
 
 # ISO file sizes (approximate, for validation)
 declare -A ISO_SIZES=(
+    ["2016"]="6.5 GB"
     ["2019"]="5.3 GB"
     ["2022"]="5.2 GB"
     ["2025"]="5.4 GB"
@@ -49,6 +51,7 @@ declare -A ISO_SIZES=(
 
 # ISO checksums (SHA256 - update these with official values if available)
 declare -A ISO_SHA256=(
+    ["2016"]=""  # Add official checksum if available
     ["2019"]=""  # Add official checksum if available
     ["2022"]=""
     ["2025"]=""
@@ -98,11 +101,12 @@ validate_version() {
         print_error "Invalid Windows Server version: $WS_VERSION"
         echo ""
         echo "Supported versions:"
+        echo "  • 2016 - Windows Server 2016 (180-day evaluation) ⚠️ EOL: 12.1.2027"
         echo "  • 2019 - Windows Server 2019 (180-day evaluation)"
         echo "  • 2022 - Windows Server 2022 (180-day evaluation)"
         echo "  • 2025 - Windows Server 2025 (180-day evaluation)"
         echo ""
-        echo "Usage: $0 [2019|2022|2025]"
+        echo "Usage: $0 [2016|2019|2022|2025]"
         exit 1
     fi
 }
